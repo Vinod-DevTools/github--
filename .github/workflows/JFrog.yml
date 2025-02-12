@@ -17,10 +17,11 @@ jobs:
       # Step 2: Upload build artifact to JFrog Artifactory
       - name: Push build artifact to JFrog Artifactory
         run: |
-          curl -k -u ${{ secrets.ARTIFACTORY_API_KEY }}: \
+          response=$(curl -k -v -u ${{ secrets.ARTIFACTORY_API_KEY }}: \
           -X PUT \
           -T yes.py \
-          "${{ secrets.ARTIFACTORY_URL }}/artifactory/${{ secrets.ARTIFACTORY_REPO }}/yes.py"
+          "${{ secrets.ARTIFACTORY_URL }}/artifactory/${{ secrets.ARTIFACTORY_REPO }}/yes.py")
+          echo "Response: $response"
         env:
           ARTIFACTORY_URL: ${{ secrets.ARTIFACTORY_URL }}  
           ARTIFACTORY_API_KEY: ${{ secrets.ARTIFACTORY_API_KEY }}
