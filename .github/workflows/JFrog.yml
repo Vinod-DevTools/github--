@@ -1,39 +1,30 @@
-name: Build and Deploy to JFrog Artifactory
+name: Set up JFrog CLI and deploy to Artifactory
 
 on:
   push:
     branches:
-      - main  # Trigger this workflow on push to the main branch
+      - main  # Trigger this on push to main branch
 
 jobs:
-  build-deploy:
-    runs-on: ubuntu-latest  # Use Ubuntu for the runner
+  setup-and-deploy:
+    runs-on: ubuntu-latest  # Use Ubuntu runner for the job
 
     steps:
     - name: Checkout the repository
       uses: actions/checkout@v2
 
-    # Set up JFrog CLI
     - name: Set up JFrog CLI
       uses: jfrog/setup-jfrog-cli@v4
       env:
-        JF_URL: https://isiih.shop  # Your JFrog Artifactory URL
+        JF_URL: https://isiih.shop  # URL of your JFrog Artifactory instance
       with:
-        oidc-provider-name: vinoddevtools  # Name of your OIDC provider for authentication
+        oidc-provider-name: vinoddevtools  # Name of your OIDC provider to authenticate
 
-    # Build your project (Example: for a Node.js project)
-    - name: Install Dependencies
-      run: |
-        npm install
+    - name: Test JFrog CLI Installation
+      run: jfrog --version  # Verify that JFrog CLI is installed correctly
 
-    - name: Build Project
-      run: |
-        npm run build  # Adjust the build command based on your project
-
-    # Deploy to JFrog Artifactory
     - name: Deploy to JFrog Artifactory
       run: |
         jfrog rt u yes.py https://github.com/Vinod-DevTools/github-- --flat=true
       env:
-        JF_URL: https://isiih.shop  # Your JFrog Artifactory URL
-        JF_ARTIFACTORY_API_KEY: JFrog  # Optional: Use API Key or OIDC to authenticate
+        JF_URL: https://isiih.shop  # JFrog Artifactory URL
