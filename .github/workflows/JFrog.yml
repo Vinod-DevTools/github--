@@ -1,30 +1,27 @@
-name: Set up JFrog CLI and deploy to Artifactory
+name: Push Build to JFrog Artifactory
 
 on:
   push:
     branches:
-      - main  # Trigger this on push to main branch
+      - main  # Trigger this action on a push to the 'main' branch
 
 jobs:
-  setup-and-deploy:
-    runs-on: ubuntu-latest  # Use Ubuntu runner for the job
+  push-artifact:
+    runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout the repository
-      uses: actions/checkout@v2
+      # Step 1: Checkout the code
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
-    - name: Set up JFrog CLI
-      uses: jfrog/setup-jfrog-cli@v4
-      env:
-        JF_URL: https://isiih.shop  # URL of your JFrog Artifactory instance
-      with:
-        oidc-provider-name: vinoddevtools  # Name of your OIDC provider to authenticate
-
-    - name: Test JFrog CLI Installation
-      run: jfrog --version  # Verify that JFrog CLI is installed correctly
-
-    - name: Deploy to JFrog Artifactory
-      run: |
-        jfrog rt u yes.py https://github.com/Vinod-DevTools/github-- --flat=true
-      env:
-        JF_URL: https://isiih.shop  # JFrog Artifactory URL
+      # Step 2: Upload build artifact to JFrog Artifactory
+      - name: Push build artifact to JFrog Artifactory
+        run: |
+          curl -u ${{ secrets.ARTIFACTORY_API_KEY }}: \
+          -X PUT \
+          -T yes.py \
+          "${{ secrets.ARTIFACTORY_URL }}/artifactory/${{ secrets.ARTIFACTORY_REPO }}/yes.py"
+        env:
+          ARTIFACTORY_URL: ${{ secrets.ARTIFACTORY_URL }}  
+          ARTIFACTORY_API_KEY: ${{ secrets.ARTIFACTORY_API_KEY }}
+          ARTIFACTORY_REPO: ${{ secrets.ARTIFACTORY_REPO }}
